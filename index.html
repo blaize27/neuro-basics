@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>NeuroBasics – Brain & Neurotransmitters</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="site-header">
+    <h1>NeuroBasics</h1>
+    <p>Minimal, visual explanations of brain structure and neurotransmitters for undergraduates.</p>
+  </header>
+
+  <main>
+    <section id="hero">
+      <div class="hero-text">
+        <h2>See how neurotransmitters shape the brain.</h2>
+        <p>Click a neurotransmitter to explore where it acts and what it does.</p>
+        <div class="nt-buttons">
+          <button data-nt="dopamine">Dopamine</button>
+          <button data-nt="serotonin">Serotonin</button>
+          <button data-nt="gaba">GABA</button>
+          <button data-nt="glutamate">Glutamate</button>
+        </div>
+      </div>
+      <div class="hero-brain">
+        <!-- Simple brain diagram using divs; we’ll style this with CSS -->
+        <div class="brain-outline">
+          <div class="region region-pfc" data-region="pfc">PFC</div>
+          <div class="region region-striatum" data-region="striatum">Striatum</div>
+          <div class="region region-hippocampus" data-region="hippocampus">Hipp</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="info">
+      <h2 id="info-title">Select a neurotransmitter</h2>
+      <p id="info-intro">You’ll see a simple explanation of where it acts and its main effects.</p>
+
+      <div id="cards-container">
+        <div class="card">
+  <h3>Dopamine in striatum</h3>
+  <p>Supports reward learning by strengthening connections when an action predicts a good outcome.</p>
+</div>
+<div class="card">
+  <h3>Dopamine in prefrontal cortex</h3>
+  <p>Helps maintain motivation and goal-directed behaviour; too low can impair focus.</p>
+</div>
+<div class="card">
+  <h3>Serotonin and mood</h3>
+  <p>Modulates mood and anxiety across cortical and limbic circuits; many antidepressants enhance serotonin signalling.</p>
+</div>
+<div class="card">
+  <h3>GABA and inhibition</h3>
+  <p>Main inhibitory transmitter; increases in certain circuits can reduce anxiety and dampen overactivity.</p>
+</div>
+
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>Made for neuroscience undergraduates – simplified, not oversimplified.</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
