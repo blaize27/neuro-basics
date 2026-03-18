@@ -1,68 +1,523 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>NeuroBasics – Brain & Neurotransmitters</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <!-- Allow pinch-zoom — removing user-scalable=no improves accessibility -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Primary meta -->
+  <title>NeuroFlow — Neuropharmacology Reference</title>
+  <meta name="description" content="Interactive reference for central neurotransmitter systems. Visualise pathway anatomy, receptor pharmacology, and synaptic signalling across dopamine, serotonin, glutamate, GABA, noradrenaline, and acetylcholine." />
+  <meta name="author" content="NeuroFlow" />
+  <meta name="theme-color" content="#0d0d0d" />
+
+  <!-- Open Graph -->
+  <meta property="og:type"        content="website" />
+  <meta property="og:title"       content="NeuroFlow — Neuropharmacology Reference" />
+  <meta property="og:description" content="Interactive reference for central neurotransmitter pathways, receptor pharmacology, and synaptic transmission mechanisms." />
+  <meta property="og:image"       content="og-image.png" />
+  <meta property="og:image:width"  content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt"   content="NeuroFlow neurotransmitter pathway explorer" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card"        content="summary_large_image" />
+  <meta name="twitter:title"       content="NeuroFlow — Neuropharmacology Reference" />
+  <meta name="twitter:description" content="Interactive reference for central neurotransmitter pathways and synaptic pharmacology." />
+  <meta name="twitter:image"       content="og-image.png" />
+
+  <!-- Favicon — inline SVG data URI, no external file needed -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%230d0d0d'/><circle cx='10' cy='16' r='4' fill='%236ab0c8' opacity='0.9'/><circle cx='24' cy='10' r='3' fill='%239b82c4' opacity='0.9'/><circle cx='24' cy='22' r='3' fill='%2352a87a' opacity='0.9'/><line x1='14' y1='16' x2='21' y2='10' stroke='%236ab0c8' stroke-width='1.5' opacity='0.6'/><line x1='14' y1='16' x2='21' y2='22' stroke='%236ab0c8' stroke-width='1.5' opacity='0.6'/></svg>" />
+  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%230d0d0d'/><circle cx='10' cy='16' r='4' fill='%236ab0c8'/><circle cx='24' cy='10' r='3' fill='%239b82c4'/><circle cx='24' cy='22' r='3' fill='%2352a87a'/></svg>" />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@400;600;700&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 </head>
 <body>
-  <header class="site-header">
-    <h1>NeuroBasics</h1>
-    <p>Minimal, visual explanations of brain structure and neurotransmitters for undergraduates.</p>
-  </header>
 
-  <main>
-    <section id="hero">
-      <div class="hero-text">
-        <h2>See how neurotransmitters shape the brain.</h2>
-        <p>Click a neurotransmitter to explore where it acts and what it does.</p>
-        <div class="nt-buttons">
-          <button data-nt="dopamine">Dopamine</button>
-          <button data-nt="serotonin">Serotonin</button>
-          <button data-nt="gaba">GABA</button>
-          <button data-nt="glutamate">Glutamate</button>
+  <!-- Landing Page -->
+  <div class="landing" id="landing-page" role="main">
+    <div class="landing-inner">
+
+      <!-- Header -->
+      <header class="landing-header">
+        <h1 class="logo">NeuroFlow</h1>
+        <p class="subtitle">Central neurotransmitter systems: receptor pharmacology, circuit anatomy, and synaptic signalling mechanisms.</p>
+        <button class="tour-start-btn" onclick="window.startTour && window.startTour()" aria-label="Start a guided tour of NeuroFlow">
+          Take a tour
+        </button>
+      </header>
+
+      <!-- Two feature cards -->
+      <div class="feature-grid">
+
+        <!-- Card 1: Pathway Explorer — animated network preview -->
+        <div class="feature-card" id="feature-network">
+          <div class="feature-card-header">
+            <div>
+              <h2 class="feature-title">Pathway Explorer</h2>
+              <p class="feature-sub">3D circuit atlas · 6 neurotransmitter systems · clinical correlates</p>
+            </div>
+          </div>
+          <p class="feature-desc">Navigate neurotransmitter projection systems in three dimensions. Select any brain region or pathway to read the mechanism, receptor pharmacology, and clinical relevance.</p>
+
+          <!-- Animated NT network — each node is a launch target -->
+          <div class="nt-network-preview" aria-label="Select a neurotransmitter to explore its pathways">
+            <svg class="nt-network-svg" viewBox="0 0 320 160" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <!-- Edges — drawn first so nodes sit above -->
+              <line x1="80"  y1="80"  x2="160" y2="30"  stroke="rgba(255,255,255,0.07)" stroke-width="1"/>
+              <line x1="80"  y1="80"  x2="160" y2="130" stroke="rgba(255,255,255,0.07)" stroke-width="1"/>
+              <line x1="80"  y1="80"  x2="240" y2="55"  stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+              <line x1="80"  y1="80"  x2="240" y2="105" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+              <line x1="160" y1="30"  x2="240" y2="55"  stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+              <line x1="160" y1="130" x2="240" y2="105" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+              <line x1="240" y1="55"  x2="280" y2="80"  stroke="rgba(255,255,255,0.07)" stroke-width="1"/>
+              <line x1="240" y1="105" x2="280" y2="80"  stroke="rgba(255,255,255,0.07)" stroke-width="1"/>
+            </svg>
+
+            <!-- NT nodes as interactive elements -->
+            <div class="nt-node-grid">
+              <div class="nt-node transmitter dopamine"    data-type="dopamine"      tabindex="0" role="button" aria-label="Explore Dopamine pathways">
+                <span class="nt-node-symbol">DA</span>
+                <span class="nt-node-name">Dopamine</span>
+                <span class="nt-node-role">Reward · Motor</span>
+              </div>
+              <div class="nt-node transmitter serotonin"   data-type="serotonin"     tabindex="0" role="button" aria-label="Explore Serotonin pathways">
+                <span class="nt-node-symbol">5-HT</span>
+                <span class="nt-node-name">Serotonin</span>
+                <span class="nt-node-role">Mood · Threat</span>
+              </div>
+              <div class="nt-node transmitter glutamate"   data-type="glutamate"     tabindex="0" role="button" aria-label="Explore Glutamate pathways">
+                <span class="nt-node-symbol">Glu</span>
+                <span class="nt-node-name">Glutamate</span>
+                <span class="nt-node-role">Excitation · LTP</span>
+              </div>
+              <div class="nt-node transmitter gaba"        data-type="gaba"          tabindex="0" role="button" aria-label="Explore GABA pathways">
+                <span class="nt-node-symbol">GABA</span>
+                <span class="nt-node-name">GABA</span>
+                <span class="nt-node-role">Inhibition · Stability</span>
+              </div>
+              <div class="nt-node transmitter noradrenaline" data-type="noradrenaline" tabindex="0" role="button" aria-label="Explore Noradrenaline pathways">
+                <span class="nt-node-symbol">NA</span>
+                <span class="nt-node-name">Noradrenaline</span>
+                <span class="nt-node-role">Arousal · Stress</span>
+              </div>
+              <div class="nt-node transmitter acetylcholine" data-type="acetylcholine" tabindex="0" role="button" aria-label="Explore Acetylcholine pathways">
+                <span class="nt-node-symbol">ACh</span>
+                <span class="nt-node-name">Acetylcholine</span>
+                <span class="nt-node-role">Attention · Memory</span>
+              </div>
+            </div>
+          </div>
+          <p class="feature-hint">Select a neurotransmitter to launch its pathway map</p>
+        </div>
+
+        <!-- Card 2: Synapse Simulator — animated cross-section preview -->
+        <div class="feature-card feature-card--synapse" id="feature-synapse">
+          <div class="feature-card-header">
+            <div>
+              <h2 class="feature-title">Synaptic Transmission</h2>
+              <p class="feature-sub">Animated simulation · Receptor class display · Membrane potential trace</p>
+            </div>
+          </div>
+          <p class="feature-desc">Observe synaptic transmission from action potential to receptor activation. Ionotropic and metabotropic receptor classes are rendered separately, with a live membrane potential trace.</p>
+
+          <!-- Animated synapse cross-section -->
+          <div class="synapse-preview-visual" aria-hidden="true">
+            <svg class="synapse-preview-svg" viewBox="0 0 300 110" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <!-- Pre-synaptic terminal -->
+              <ellipse cx="72" cy="55" rx="58" ry="46" fill="rgba(30,40,60,0.7)" stroke="rgba(100,120,160,0.3)" stroke-width="1.2"/>
+              <!-- Vesicles -->
+              <circle cx="98" cy="42" r="5" fill="rgba(100,130,200,0.5)" stroke="rgba(120,150,220,0.7)" stroke-width="0.8"/>
+              <circle cx="108" cy="55" r="5" fill="rgba(100,130,200,0.5)" stroke="rgba(120,150,220,0.7)" stroke-width="0.8"/>
+              <circle cx="98" cy="68" r="5" fill="rgba(100,130,200,0.5)" stroke="rgba(120,150,220,0.7)" stroke-width="0.8"/>
+              <circle cx="85" cy="52" r="4" fill="rgba(100,130,200,0.35)" stroke="rgba(120,150,220,0.5)" stroke-width="0.8"/>
+              <!-- Cleft -->
+              <rect x="118" y="18" width="14" height="74" fill="rgba(4,8,20,0.7)"/>
+              <line x1="118" y1="18" x2="118" y2="92" stroke="rgba(100,120,160,0.5)" stroke-width="1.5"/>
+              <line x1="132" y1="18" x2="132" y2="92" stroke="rgba(100,120,160,0.5)" stroke-width="1.5"/>
+              <!-- NT particles in cleft — animated via CSS -->
+              <circle class="nt-dot-1" cx="124" cy="35" r="2.5" fill="rgba(100,150,220,0.9)"/>
+              <circle class="nt-dot-2" cx="126" cy="55" r="2.5" fill="rgba(100,150,220,0.9)"/>
+              <circle class="nt-dot-3" cx="124" cy="74" r="2.5" fill="rgba(100,150,220,0.9)"/>
+              <!-- Post-synaptic neuron -->
+              <ellipse cx="220" cy="55" rx="78" ry="46" fill="rgba(30,40,60,0.7)" stroke="rgba(100,120,160,0.3)" stroke-width="1.2"/>
+              <!-- Ionotropic receptor slabs -->
+              <rect x="133" y="35" width="22" height="7" rx="2" fill="rgba(100,150,220,0.25)" stroke="rgba(100,150,220,0.55)" stroke-width="1"/>
+              <rect x="133" y="63" width="22" height="7" rx="2" fill="rgba(100,150,220,0.25)" stroke="rgba(100,150,220,0.55)" stroke-width="1"/>
+              <!-- GPCR 7TM segments -->
+              <rect x="134" y="47" width="5" height="12" rx="1.5" fill="rgba(80,120,200,0.2)" stroke="rgba(80,120,200,0.5)" stroke-width="0.8"/>
+              <rect x="141" y="47" width="5" height="12" rx="1.5" fill="rgba(80,120,200,0.2)" stroke="rgba(80,120,200,0.5)" stroke-width="0.8"/>
+              <rect x="148" y="47" width="5" height="12" rx="1.5" fill="rgba(80,120,200,0.2)" stroke="rgba(80,120,200,0.5)" stroke-width="0.8"/>
+              <!-- Nucleus -->
+              <ellipse cx="228" cy="62" rx="18" ry="14" fill="rgba(20,30,50,0.6)" stroke="rgba(80,100,140,0.25)" stroke-width="1"/>
+              <!-- Section labels -->
+              <text x="46"  y="14" font-family="IBM Plex Sans,sans-serif" font-size="7" fill="rgba(140,155,175,0.6)" text-anchor="middle">Pre-synaptic</text>
+              <text x="125" y="14" font-family="IBM Plex Sans,sans-serif" font-size="7" fill="rgba(130,145,165,0.5)" text-anchor="middle">Cleft</text>
+              <text x="218" y="14" font-family="IBM Plex Sans,sans-serif" font-size="7" fill="rgba(140,155,175,0.6)" text-anchor="middle">Post-synaptic</text>
+            </svg>
+          </div>
+
+          <button class="synapse-launch-btn" id="go-synapse-btn" aria-label="Launch the Synaptic Transmission simulator">
+            Launch simulation
+          </button>
+        </div>
+
+      </div><!-- /feature-grid -->
+
+      <!-- Guided Scenarios -->
+      <div class="scenarios-section" id="scenarios-section" aria-labelledby="scenarios-heading">
+        <h2 class="scenarios-heading" id="scenarios-heading">Clinical case studies</h2>
+        <p class="scenarios-subhead">Each case opens the relevant neurotransmitter circuit, identifies the molecular target, and links to receptor-level pharmacology.</p>
+        <div class="scenarios-grid">
+          <div class="scenario-card-wrap">
+            <button class="scenario-card" data-scenario="cocaine" aria-label="Explore: What happens during a cocaine high?">
+              <span class="scenario-nt-dot" style="background:#6ab0c8"></span>
+              <span class="scenario-label">Cocaine &amp; Dopamine</span>
+              <span class="scenario-q">What happens during a cocaine high?</span>
+            </button>
+            <button class="scenario-quiz-btn" aria-label="Quiz: Cocaine & Dopamine">Test yourself</button>
+          </div>
+          <div class="scenario-card-wrap">
+            <button class="scenario-card" data-scenario="ssri" aria-label="Explore: How do antidepressants work?">
+              <span class="scenario-nt-dot" style="background:#9b82c4"></span>
+              <span class="scenario-label">SSRIs &amp; Serotonin</span>
+              <span class="scenario-q">How do antidepressants work?</span>
+            </button>
+            <button class="scenario-quiz-btn" aria-label="Quiz: SSRIs & Serotonin">Test yourself</button>
+          </div>
+          <div class="scenario-card-wrap">
+            <button class="scenario-card" data-scenario="alzheimers" aria-label="Explore: Why does Alzheimer's cause memory loss?">
+              <span class="scenario-nt-dot" style="background:#c0884a"></span>
+              <span class="scenario-label">Alzheimer's &amp; ACh</span>
+              <span class="scenario-q">Why does Alzheimer's cause memory loss?</span>
+            </button>
+            <button class="scenario-quiz-btn" aria-label="Quiz: Alzheimer's & ACh">Test yourself</button>
+          </div>
+          <div class="scenario-card-wrap">
+            <button class="scenario-card" data-scenario="parkinsons" aria-label="Explore: What causes Parkinson's disease?">
+              <span class="scenario-nt-dot" style="background:#6ab0c8"></span>
+              <span class="scenario-label">Parkinson's &amp; Dopamine</span>
+              <span class="scenario-q">What causes Parkinson's disease?</span>
+            </button>
+            <button class="scenario-quiz-btn" aria-label="Quiz: Parkinson's & Dopamine">Test yourself</button>
+          </div>
+          <div class="scenario-card-wrap">
+            <button class="scenario-card" data-scenario="ketamine" aria-label="Explore: Why does ketamine treat depression rapidly?">
+              <span class="scenario-nt-dot" style="background:#52a87a"></span>
+              <span class="scenario-label">Ketamine &amp; Glutamate</span>
+              <span class="scenario-q">Why does ketamine treat depression so rapidly?</span>
+            </button>
+            <button class="scenario-quiz-btn" aria-label="Quiz: Ketamine & Glutamate">Test yourself</button>
+          </div>
+          <div class="scenario-card-wrap">
+            <button class="scenario-card" data-scenario="benzos" aria-label="Explore: How do benzodiazepines reduce anxiety?">
+              <span class="scenario-nt-dot" style="background:#b86060"></span>
+              <span class="scenario-label">Benzodiazepines &amp; GABA</span>
+              <span class="scenario-q">How do benzodiazepines reduce anxiety?</span>
+            </button>
+            <button class="scenario-quiz-btn" aria-label="Quiz: Benzodiazepines & GABA">Test yourself</button>
+          </div>
         </div>
       </div>
-      <div class="hero-brain">
-        <!-- Simple brain diagram using divs; we’ll style this with CSS -->
-        <div class="brain-outline">
-          <div class="region region-pfc" data-region="pfc">PFC</div>
-          <div class="region region-striatum" data-region="striatum">Striatum</div>
-          <div class="region region-hippocampus" data-region="hippocampus">Hipp</div>
+
+      <!-- Comparison CTA — full card with mini table preview -->
+      <div class="compare-cta-card" id="go-compare-btn" role="button" tabindex="0" aria-label="Open neurotransmitter comparison table">
+        <div class="compare-cta-left">
+          <h2 class="compare-cta-title">Compare all six</h2>
+          <p class="compare-cta-desc">Side-by-side reference: receptor class, speed, ions, reuptake, key disorder, and clinical drug — across all six neurotransmitters.</p>
+          <span class="compare-cta-action">Open comparison table</span>
+        </div>
+        <div class="compare-cta-preview" aria-hidden="true">
+          <table class="compare-mini-table">
+            <thead>
+              <tr>
+                <th>NT</th>
+                <th>Type</th>
+                <th>Effect</th>
+                <th>Key drug</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td class="cmt-da">DA</td>  <td>GPCR</td>       <td class="cmt-mod">Mod.</td>   <td>L-DOPA</td></tr>
+              <tr><td class="cmt-5ht">5-HT</td><td>GPCR+ion</td>  <td class="cmt-mix">Mixed</td>  <td>SSRIs</td></tr>
+              <tr><td class="cmt-glu">Glu</td> <td>Ion+GPCR</td>  <td class="cmt-exc">Exc.</td>   <td>Ketamine</td></tr>
+              <tr><td class="cmt-gaba">GABA</td><td>Ion+GPCR</td> <td class="cmt-inh">Inh.</td>   <td>Benzos</td></tr>
+              <tr><td class="cmt-na">NA</td>   <td>GPCR</td>       <td class="cmt-mod">Mod.</td>   <td>SNRIs</td></tr>
+              <tr><td class="cmt-ach">ACh</td> <td>Ion+GPCR</td>  <td class="cmt-exc">Exc.</td>   <td>Donepezil</td></tr>
+            </tbody>
+          </table>
         </div>
       </div>
-    </section>
 
-    <section id="info">
-      <h2 id="info-title">Select a neurotransmitter</h2>
-      <p id="info-intro">You’ll see a simple explanation of where it acts and its main effects.</p>
+      <!-- Footer -->
+      <footer class="site-footer" role="contentinfo">
+        <div class="footer-inner">
+          <div class="footer-left">
+            <span class="footer-logo">NeuroFlow</span>
+            <p class="footer-note">An interactive learning tool for undergraduate neuroscience. Receptor mechanisms and pathway descriptions follow standard neuropharmacology and neuroanatomy curricula.</p>
+          </div>
+          <div class="footer-right">
+            <p class="footer-disclaimer">Scientific content is intended for educational purposes. Mechanisms represent established consensus; consult primary literature for research use.</p>
+            <p class="footer-sources">Key references: Nestler et al. <em>Molecular Neuropharmacology</em>; Kandel et al. <em>Principles of Neural Science</em>; Stahl's <em>Essential Psychopharmacology</em>.</p>
+            <div class="footer-links">
+              <a href="#" class="footer-link" data-open="glossary">Glossary index</a>
+              <a href="#" class="footer-link" onclick="window.openKeyConcepts && window.openKeyConcepts(); return false;">Key concepts</a>
+            </div>
+          </div>
+        </div>
+      </footer>
 
-      <div id="cards-container">
-        <div class="card">
-  <h3>Dopamine in striatum</h3>
-  <p>Supports reward learning by strengthening connections when an action predicts a good outcome.</p>
-</div>
-<div class="card">
-  <h3>Dopamine in prefrontal cortex</h3>
-  <p>Helps maintain motivation and goal-directed behaviour; too low can impair focus.</p>
-</div>
-<div class="card">
-  <h3>Serotonin and mood</h3>
-  <p>Modulates mood and anxiety across cortical and limbic circuits; many antidepressants enhance serotonin signalling.</p>
-</div>
-<div class="card">
-  <h3>GABA and inhibition</h3>
-  <p>Main inhibitory transmitter; increases in certain circuits can reduce anxiety and dampen overactivity.</p>
-</div>
-
+    </div><!-- /landing-inner -->
+  </div>
+  <div class="compare-page hidden" id="compare-page" role="main" aria-label="Neurotransmitter comparison table">
+    <div class="compare-header">
+      <button class="back-button" id="compare-back-btn" aria-label="Return to home">Back</button>
+      <span class="compare-page-label">Neurotransmitter Comparison</span>
+      <div class="compare-export-btns">
+        <button class="ref-btn" id="compare-csv-btn" aria-label="Download comparison as CSV">Export CSV</button>
+        <button class="ref-btn" id="compare-print-btn" aria-label="Print comparison table">Print</button>
       </div>
-    </section>
-  </main>
+    </div>
+    <div class="compare-body">
+      <p class="compare-intro">A side-by-side reference across the six major neurotransmitters. Click any row label for a concept explanation, or a column header to explore that NT's pathways.</p>
+      <p class="compare-scroll-hint" aria-hidden="true">Scroll horizontally to see all columns</p>
+      <!-- Row concept panel — fixed overlay, shown when a row label is clicked -->
+      <div class="compare-row-panel" id="compare-row-panel" role="complementary" aria-label="Row concept panel">
+        <div class="crp-body"></div>
+      </div>
+      <div class="compare-table-wrap">
+        <table class="compare-table" aria-label="Neurotransmitter comparison">
+          <thead>
+            <tr>
+              <th scope="col">Property</th>
+              <th scope="col" class="col-da col-nt-header">
+                <div class="nt-col-header"><span class="nt-col-symbol">DA</span><span class="nt-col-name">Dopamine</span></div>
+              </th>
+              <th scope="col" class="col-5ht col-nt-header">
+                <div class="nt-col-header"><span class="nt-col-symbol">5-HT</span><span class="nt-col-name">Serotonin</span></div>
+              </th>
+              <th scope="col" class="col-glu col-nt-header">
+                <div class="nt-col-header"><span class="nt-col-symbol">Glu</span><span class="nt-col-name">Glutamate</span></div>
+              </th>
+              <th scope="col" class="col-gaba col-nt-header">
+                <div class="nt-col-header"><span class="nt-col-symbol">GABA</span><span class="nt-col-name">GABA</span></div>
+              </th>
+              <th scope="col" class="col-na col-nt-header">
+                <div class="nt-col-header"><span class="nt-col-symbol">NA</span><span class="nt-col-name">Noradrenaline</span></div>
+              </th>
+              <th scope="col" class="col-ach col-nt-header">
+                <div class="nt-col-header"><span class="nt-col-symbol">ACh</span><span class="nt-col-name">Acetylcholine</span></div>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="row-label" scope="row">Primary effect</td>
+              <td class="tag-modulatory">Modulatory</td>
+              <td class="tag-mixed">Mixed<span class="row-sub">5-HT3 excitatory<br>5-HT1A inhibitory</span></td>
+              <td class="tag-excitatory">Excitatory</td>
+              <td class="tag-inhibitory">Inhibitory</td>
+              <td class="tag-modulatory">Modulatory</td>
+              <td class="tag-excitatory">Excitatory</td>
+            </tr>
+            <tr>
+              <td class="row-label" scope="row">Receptor class</td>
+              <td>GPCR (D1/D2)</td>
+              <td>GPCR + Ionotropic<span class="row-sub">5-HT1A + 5-HT3</span></td>
+              <td>Ionotropic + GPCR<span class="row-sub">AMPA/NMDA + mGluR</span></td>
+              <td>Ionotropic + GPCR<span class="row-sub">GABA-A + GABA-B</span></td>
+              <td>GPCR (α1, α2, β)</td>
+              <td>Ionotropic + GPCR<span class="row-sub">nAChR + mAChR</span></td>
+            </tr>
+            <tr>
+              <td class="row-label" scope="row">Speed of action</td>
+              <td>Slow<span class="row-sub">100s ms</span></td>
+              <td>Mixed<span class="row-sub">5-HT3: fast<br>5-HT1A: slow</span></td>
+              <td>Fast<span class="row-sub">ms</span></td>
+              <td>Mixed<span class="row-sub">GABA-A: fast<br>GABA-B: slow</span></td>
+              <td>Slow<span class="row-sub">100s ms</span></td>
+              <td>Mixed<span class="row-sub">nAChR: fast<br>mAChR: slow</span></td>
+            </tr>
+            <tr>
+              <td class="row-label" scope="row">Key ions</td>
+              <td>Na⁺<span class="row-sub">via PKA</span></td>
+              <td>K⁺ out; Na⁺ in<span class="row-sub">5-HT3</span></td>
+              <td>Na⁺, Ca²⁺ in<span class="row-sub">K⁺ out</span></td>
+              <td>Cl⁻ in<span class="row-sub">K⁺ out (GABA-B)</span></td>
+              <td>Na⁺, Ca²⁺, K⁺</td>
+              <td>Na⁺, Ca²⁺ in<span class="row-sub">K⁺ out</span></td>
+            </tr>
+            <tr>
+              <td class="row-label" scope="row">Second messenger</td>
+              <td>cAMP<span class="row-sub">D1: ↑ / D2: ↓</span></td>
+              <td>cAMP<span class="row-sub">5-HT1A: ↓</span></td>
+              <td>Ca²⁺<span class="row-sub">via NMDA</span></td>
+              <td>Cl⁻ channel<span class="row-sub">GABA-A</span></td>
+              <td>IP3/DAG (α1)<span class="row-sub">cAMP (β)</span></td>
+              <td>IP3/DAG (M1)<span class="row-sub">GIRK (M2)</span></td>
+            </tr>
+            <tr>
+              <td class="row-label" scope="row">Reuptake / clearance</td>
+              <td>DAT<span class="row-sub">+ MAO-B</span></td>
+              <td>SERT</td>
+              <td>EAATs<span class="row-sub">mainly astrocytes</span></td>
+              <td>GAT1/2/3<span class="row-sub">+ astrocyte GABA-T</span></td>
+              <td>NET<span class="row-sub">+ MAO-A/B</span></td>
+              <td>AChE<span class="row-sub">enzymatic cleavage</span></td>
+            </tr>
+            <tr>
+              <td class="row-label" scope="row">Origin nucleus</td>
+              <td>VTA, SNc</td>
+              <td>Raphe nuclei</td>
+              <td>Cortex, Thalamus</td>
+              <td>Local interneurons</td>
+              <td>Locus Coeruleus</td>
+              <td>Basal Forebrain<span class="row-sub">Brainstem</span></td>
+            </tr>
+            <tr>
+              <td class="row-label" scope="row">Key function</td>
+              <td>Reward prediction<span class="row-sub">motor control</span></td>
+              <td>Mood<span class="row-sub">threat regulation</span></td>
+              <td>Excitation<span class="row-sub">LTP · memory</span></td>
+              <td>Inhibition<span class="row-sub">network stability</span></td>
+              <td>Arousal<span class="row-sub">stress · attention</span></td>
+              <td>Attention<span class="row-sub">memory encoding</span></td>
+            </tr>
+            <tr>
+              <td class="row-label" scope="row">Disorder on loss</td>
+              <td>Parkinson's<span class="row-sub">addiction (VTA)</span></td>
+              <td>Depression<span class="row-sub">anxiety</span></td>
+              <td>Cognitive impairment</td>
+              <td>Seizures<span class="row-sub">anxiety</span></td>
+              <td>ADHD, PTSD</td>
+              <td>Alzheimer's disease</td>
+            </tr>
+            <tr>
+              <td class="row-label" scope="row">Drug acting here</td>
+              <td>L-DOPA<span class="row-sub">cocaine · antipsychotics</span></td>
+              <td>SSRIs<span class="row-sub">psilocybin</span></td>
+              <td>Ketamine<span class="row-sub">memantine</span></td>
+              <td>Benzodiazepines<span class="row-sub">baclofen</span></td>
+              <td>SNRIs<span class="row-sub">clonidine · propranolol</span></td>
+              <td>Donepezil<span class="row-sub">nicotine · atropine</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div><!-- /compare-table-wrap -->
+    </div><!-- /compare-body -->
+  </div>
 
-  <footer class="site-footer">
-    <p>Made for neuroscience undergraduates – simplified, not oversimplified.</p>
-  </footer>
+  <!-- Comparison Table Page -->
+  <div class="synapse-page hidden" id="synapse-page" role="main" aria-label="Synaptic Transmission Simulator">
+    <div class="synapse-header" role="navigation" aria-label="Simulator controls">
+      <button class="back-button" id="synapse-back-btn" aria-label="Return to home">Back</button>
+      <span class="synapse-page-label" aria-hidden="true">Synaptic Transmission</span>
+      <div class="synapse-nt-switcher" role="group" aria-label="Select neurotransmitter">
+        <button class="nt-pill" data-type="dopamine"      aria-label="Dopamine">DA</button>
+        <button class="nt-pill" data-type="serotonin"     aria-label="Serotonin">5-HT</button>
+        <button class="nt-pill" data-type="glutamate"     aria-label="Glutamate">Glu</button>
+        <button class="nt-pill" data-type="gaba"          aria-label="GABA">GABA</button>
+        <button class="nt-pill" data-type="noradrenaline" aria-label="Noradrenaline">NA</button>
+        <button class="nt-pill" data-type="acetylcholine" aria-label="Acetylcholine">ACh</button>
+      </div>
+    </div>
+    <div class="synapse-layout">
+      <div class="synapse-canvas-wrap">
+        <canvas id="synapse-canvas" role="img" aria-label="Animated synaptic transmission diagram"></canvas>
+        <button class="fire-btn" id="fire-btn" aria-label="Trigger an action potential and fire the neuron">Fire Neuron</button>
+        <div class="mp-wrap">
+          <canvas id="potential-canvas" role="img" aria-label="Membrane potential graph"></canvas>
+          <button class="mp-expand-btn" id="mp-expand-btn" aria-label="Toggle membrane potential graph size">Expand</button>
+        </div>
+      </div>
+      <div class="synapse-info-panel" id="synapse-info-panel" role="complementary" aria-label="Neurotransmitter details"></div>
+    </div>
+  </div>
 
+  <!-- Graph Page -->
+  <div class="graph-page hidden" id="graph-page" role="main" aria-label="Pathway Explorer">
+    <div class="graph-header" role="navigation" aria-label="Pathway explorer controls">
+      <button class="back-button" id="back-btn" aria-label="Return to home">Back</button>
+      <div class="nt-switcher" id="nt-switcher" role="group" aria-label="Select neurotransmitter">
+        <button class="nt-pill" data-type="dopamine"      title="Dopamine"      aria-label="Dopamine">DA</button>
+        <button class="nt-pill" data-type="serotonin"     title="Serotonin"     aria-label="Serotonin">5-HT</button>
+        <button class="nt-pill" data-type="glutamate"     title="Glutamate"     aria-label="Glutamate">Glu</button>
+        <button class="nt-pill" data-type="gaba"          title="GABA"          aria-label="GABA">GABA</button>
+        <button class="nt-pill" data-type="noradrenaline" title="Noradrenaline" aria-label="Noradrenaline">NA</button>
+        <button class="nt-pill" data-type="acetylcholine" title="Acetylcholine" aria-label="Acetylcholine">ACh</button>
+      </div>
+    </div>
+    <div class="perf-indicator" id="perf-indicator" aria-live="polite" aria-atomic="true"></div>
+
+    <!-- Explore hint (fades after 3s) -->
+    <div class="explore-hint" id="explore-hint" aria-hidden="true">
+      <span>Click nodes &amp; connections to explore</span>
+    </div>
+
+    <div class="graph-container">
+      <div id="graph-scene-container" role="img" aria-label="Interactive 3D neurotransmitter pathway graph">
+        <div id="graph-node-labels" aria-hidden="true"></div>
+      </div>
+      <div class="graph-sidebar-wrap" id="graph-sidebar-wrap">
+        <div id="graph-sidebar" role="complementary" aria-label="Region and pathway details" style="position:relative">
+          <div class="glossary-tooltip" id="graph-gloss-tooltip" role="tooltip" aria-live="polite"></div>
+          <!-- Sidebar content injected by JS -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Key Concepts Drawer ──────────────────────────────── -->
+  <div class="key-concepts-drawer" id="key-concepts-drawer" role="dialog" aria-modal="true" aria-label="Key concepts">
+    <div class="kc-inner"><!-- injected by reference.js --></div>
+  </div>
+
+  <!-- ── Glossary Index Page ───────────────────────────────── -->
+  <div class="glossary-page hidden" id="glossary-page" role="dialog" aria-modal="true" aria-label="Glossary">
+    <div class="glos-header">
+      <div>
+        <p class="glos-eyebrow">Reference</p>
+        <h2 class="glos-title">Glossary</h2>
+      </div>
+      <button class="glos-close-btn" onclick="window.closeGlossaryIndex()" aria-label="Close glossary">Close</button>
+    </div>
+    <div class="glos-body"></div>
+  </div>
+
+  <!-- ── Guided Tour Overlay ───────────────────────────────── -->
+  <div class="tour-overlay hidden" id="tour-overlay" role="dialog" aria-modal="true" aria-label="NeuroFlow guided tour">
+    <div class="tour-spotlight" id="tour-spotlight"></div>
+    <div class="tour-callout" id="tour-callout">
+      <div class="tour-callout-header">
+        <span class="tour-step-num"></span>
+        <button class="tour-skip-btn" onclick="endTour()" aria-label="Skip tour">Skip</button>
+      </div>
+      <h3 class="tour-title"></h3>
+      <p class="tour-body"></p>
+      <div class="tour-callout-footer">
+        <div class="tour-dots"></div>
+        <button class="tour-next" onclick="tourNext()">Next →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Quiz Modal ────────────────────────────────────────── -->
+  <div class="quiz-modal hidden" id="quiz-modal" role="dialog" aria-modal="true" aria-label="Scenario quiz">
+    <div class="quiz-inner" id="quiz-inner"></div>
+  </div>
+
+  <script src="glossary.js"></script>
   <script src="script.js"></script>
+  <script src="synapse.js"></script>
+  <script src="learning.js"></script>
+  <script src="reference.js"></script>
+  <script src="explorer.js"></script>
 </body>
 </html>
